@@ -1,2 +1,8 @@
 prompts
 prompt_outputs
+.pytest_cache/
+.venv/
+__pycache__/
+*.pyc
+.env
+*.egg-info/
