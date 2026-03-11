@@ -1,5 +1,3 @@
-prompts
-prompt_outputs
 .pytest_cache/
 .venv/
 __pycache__/
