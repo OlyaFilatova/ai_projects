@@ -1,0 +1,11 @@
+{
+  "name": "ai_workflow_projects",
+  "private": true,
+  "devDependencies": {
+    "husky": "^9.1.7"
+  },
+  "scripts": {
+    "prepare": "husky",
+    "prepush:python": "bash scripts/run_python_ci_checks.sh"
+  }
+}

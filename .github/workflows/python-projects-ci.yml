@@ -1,0 +1,147 @@
+name: Python Projects CI
+
+on:
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  discover:
+    name: Discover Python projects
+    runs-on: ubuntu-latest
+    outputs:
+      projects: ${{ steps.collect.outputs.projects }}
+      has_projects: ${{ steps.collect.outputs.has_projects }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Collect root Python projects
+        id: collect
+        shell: bash
+        run: |
+          python - <<'PY'
+          import json
+          import os
+
+          projects = []
+          for name in sorted(os.listdir(".")):
+              if name.startswith(".") or not os.path.isdir(name):
+                  continue
+              if any(os.path.exists(os.path.join(name, cfg)) for cfg in ("pyproject.toml", "setup.py", "requirements.txt")):
+                  projects.append(name)
+
+          with open(os.environ["GITHUB_OUTPUT"], "a", encoding="utf-8") as fh:
+              fh.write(f"projects={json.dumps(projects)}\n")
+              fh.write(f"has_projects={'true' if projects else 'false'}\n")
+          PY
+
+  lint:
+    name: Lint (${{ matrix.project }})
+    runs-on: ubuntu-latest
+    needs: discover
+    if: needs.discover.outputs.has_projects == 'true'
+    strategy:
+      fail-fast: false
+      matrix:
+        project: ${{ fromJson(needs.discover.outputs.projects) }}
+    defaults:
+      run:
+        working-directory: ${{ matrix.project }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: "pip"
+          cache-dependency-path: |
+            ${{ matrix.project }}/pyproject.toml
+            ${{ matrix.project }}/requirements*.txt
+
+      - name: Install dependencies
+        shell: bash
+        run: |
+          python -m pip install --upgrade pip
+          if [[ -f pyproject.toml || -f setup.py ]]; then
+            python -m pip install ".[dev]" || python -m pip install .
+          fi
+          if [[ -f requirements-dev.txt ]]; then
+            python -m pip install -r requirements-dev.txt
+          fi
+          if [[ -f requirements.txt ]]; then
+            python -m pip install -r requirements.txt
+          fi
+
+      - name: Run lint
+        shell: bash
+        run: |
+          if python -m ruff --version >/dev/null 2>&1; then
+            python -m ruff check --exclude=tests/golden .
+          elif python -m flake8 --version >/dev/null 2>&1; then
+            python -m flake8 .
+          else
+            echo "No supported linter installed for ${PWD} (expected ruff or flake8)."
+            exit 1
+          fi
+
+          if grep -q '^\[tool\.mypy\]' pyproject.toml 2>/dev/null; then
+            if python -m mypy --version >/dev/null 2>&1; then
+              python -m mypy .
+            else
+              echo "mypy is configured for ${PWD} but is not installed."
+              exit 1
+            fi
+          fi
+
+  test:
+    name: Test (${{ matrix.project }})
+    runs-on: ubuntu-latest
+    needs: discover
+    if: needs.discover.outputs.has_projects == 'true'
+    strategy:
+      fail-fast: false
+      matrix:
+        project: ${{ fromJson(needs.discover.outputs.projects) }}
+    defaults:
+      run:
+        working-directory: ${{ matrix.project }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: "pip"
+          cache-dependency-path: |
+            ${{ matrix.project }}/pyproject.toml
+            ${{ matrix.project }}/requirements*.txt
+
+      - name: Install dependencies
+        shell: bash
+        run: |
+          python -m pip install --upgrade pip
+          if [[ -f pyproject.toml || -f setup.py ]]; then
+            python -m pip install ".[dev]" || python -m pip install .
+          fi
+          if [[ -f requirements-dev.txt ]]; then
+            python -m pip install -r requirements-dev.txt
+          fi
+          if [[ -f requirements.txt ]]; then
+            python -m pip install -r requirements.txt
+          fi
+
+      - name: Run tests
+        shell: bash
+        run: |
+          if python -m pytest --version >/dev/null 2>&1; then
+            python -m pytest
+          else
+            echo "pytest is not installed for ${PWD}."
+            exit 1
+          fi

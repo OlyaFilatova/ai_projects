@@ -1,0 +1,4 @@
+#!/usr/bin/env sh
+set -e
+
+USE_VENV=1 bash scripts/run_python_ci_checks.sh
