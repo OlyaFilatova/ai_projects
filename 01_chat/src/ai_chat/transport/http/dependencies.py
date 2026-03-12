@@ -24,7 +24,7 @@ def get_container(request: Request) -> ServiceContainer:
 
 def get_db_session(
     container: Annotated[ServiceContainer, Depends(get_container)],
-) -> Generator[Session, None, None]:
+) -> Generator[Session]:
     """Provide a database session for request-scoped work."""
 
     session = container.session_factory()
