@@ -197,6 +197,99 @@ The Compose file includes:
 - `api`: FastAPI application
 - `db`: PostgreSQL database for the current persistence layer
 
+## Local LLM
+
+The project can use a local model server through the existing `openai-compatible` provider path. A practical option is Ollama, which exposes an OpenAI-compatible API on `http://host.docker.internal:11434/v1` for containers running on Docker Desktop.
+
+This setup keeps PostgreSQL in Docker and runs the local LLM on your machine, so you can use the full chat flow without paying for a hosted model API.
+
+1. Install and start Ollama on the host machine:
+
+```bash
+brew install ollama
+ollama serve
+```
+
+2. Pull a model in another terminal:
+
+```bash
+ollama pull llama3.2
+```
+
+3. Verify the local model server responds:
+
+```bash
+curl http://127.0.0.1:11434/v1/chat/completions \
+  -H "Content-Type: application/json" \
+  -d '{
+    "model": "llama3.2",
+    "messages": [
+      {"role": "user", "content": "Hello"}
+    ]
+  }'
+```
+
+4. Copy the local env template and switch the project from `mock` to the OpenAI-compatible local server:
+
+```bash
+cp .env.example .env
+```
+
+Set these values in `.env`:
+
+```dotenv
+AI_CHAT_DATABASE__URL=postgresql+psycopg://postgres:replace-with-db-password@db:5432/ai_chat
+AI_CHAT_JWT__SECRET=replace-with-a-long-random-secret-of-at-least-32-characters
+AI_CHAT_LLM__PROVIDER=openai-compatible
+AI_CHAT_LLM__API_BASE_URL=http://host.docker.internal:11434/v1
+AI_CHAT_LLM__API_KEY=ollama
+AI_CHAT_LLM__MODEL=llama3.2
+POSTGRES_DB=ai_chat
+POSTGRES_USER=postgres
+POSTGRES_PASSWORD=replace-with-db-password
+```
+
+5. Start the API and PostgreSQL with Docker Compose:
+
+```bash
+docker compose --env-file .env up --build
+```
+
+6. Confirm the API is healthy:
+
+```bash
+curl http://127.0.0.1:8000/health
+```
+
+7. Register a user, get a token, and send a chat request:
+
+```bash
+curl -X POST http://127.0.0.1:8000/auth/register \
+  -H "Content-Type: application/json" \
+  -d '{"email":"user@example.com","password":"ChangeMe123!"}'
+```
+
+```bash
+curl -X POST http://127.0.0.1:8000/auth/token \
+  -H "Content-Type: application/json" \
+  -d '{"email":"user@example.com","password":"ChangeMe123!"}'
+```
+
+Use the returned access token:
+
+```bash
+curl -X POST http://127.0.0.1:8000/chat/messages \
+  -H "Authorization: Bearer <token>" \
+  -H "Content-Type: application/json" \
+  -d '{"message":"Explain what this project does."}'
+```
+
+Notes:
+- `host.docker.internal` is the correct host address for Docker Desktop on macOS and Windows.
+- If you run Docker on Linux, you may need to replace `host.docker.internal` with a host gateway address that your containers can reach.
+- `AI_CHAT_LLM__API_KEY` is still required by the adapter, even when the local server does not validate it. Any non-empty placeholder value is enough for Ollama.
+- If you want the deterministic no-cost development path instead of real model output, keep `AI_CHAT_LLM__PROVIDER=mock`.
+
 ## Deployment
 
 The repository now includes a production-oriented Compose definition in `docker-compose.prod.yml`.

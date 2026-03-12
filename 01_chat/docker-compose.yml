@@ -8,6 +8,9 @@ services:
       AI_CHAT_DATABASE__URL: ${AI_CHAT_DATABASE__URL}
       AI_CHAT_JWT__SECRET: ${AI_CHAT_JWT__SECRET}
       AI_CHAT_LLM__PROVIDER: ${AI_CHAT_LLM__PROVIDER:-mock}
+      AI_CHAT_LLM__API_BASE_URL: ${AI_CHAT_LLM__API_BASE_URL:-}
+      AI_CHAT_LLM__API_KEY: ${AI_CHAT_LLM__API_KEY:-}
+      AI_CHAT_LLM__MODEL: ${AI_CHAT_LLM__MODEL:-gpt-4o-mini}
     depends_on:
       db:
         condition: service_healthy
