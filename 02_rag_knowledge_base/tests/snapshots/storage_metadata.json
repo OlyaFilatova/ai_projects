@@ -1,0 +1,9 @@
+{
+  "embedding_workflow": {
+    "embedding_backend": "deterministic",
+    "embedding_model_name": "deterministic-v1",
+    "vector_shape": "sparse"
+  },
+  "format": "rag-knb-local",
+  "schema_version": 1
+}

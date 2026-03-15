@@ -1,0 +1,55 @@
+Grounded answer:
+- Saturn has rings. [diagnostics:0]
+Matches: 1
+Diagnostics:
+{
+  "match_count": 1,
+  "matched_chunk_ids": [
+    "diagnostics:0"
+  ],
+  "matched_document_ids": [
+    "diagnostics"
+  ],
+  "top_score": 0.816496580927726,
+  "matches": [
+    {
+      "chunk_id": "diagnostics:0",
+      "document_id": "diagnostics",
+      "score": 0.816497,
+      "snippet": "Saturn has rings."
+    }
+  ],
+  "claim_alignments": [
+    {
+      "claim": "Saturn has rings.",
+      "chunk_id": "diagnostics:0",
+      "support_sentence": "Saturn has rings."
+    }
+  ],
+  "context_window": [
+    {
+      "chunk_id": "diagnostics:0",
+      "document_id": "diagnostics",
+      "sentence": "Saturn has rings.",
+      "score": 0.816497
+    }
+  ],
+  "parent_context": [
+    {
+      "parent_document_id": "diagnostics",
+      "child_chunk_id": "diagnostics:0",
+      "parent_excerpt": "Saturn has rings."
+    }
+  ],
+  "prompt_injection_policy": {
+    "blocked_sentence_count": 0,
+    "blocked_chunk_ids": [],
+    "blocked_sentences": []
+  },
+  "original_question": "What has rings?",
+  "rewritten_question": "What has rings",
+  "retrieval_queries": [
+    "What has rings"
+  ],
+  "retrieval_duration_ms": "<timing>"
+}
