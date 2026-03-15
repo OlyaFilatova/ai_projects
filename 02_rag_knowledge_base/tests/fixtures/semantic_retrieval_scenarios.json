@@ -1,0 +1,22 @@
+[
+  {
+    "name": "semantic paraphrase over lexical mismatch",
+    "documents": [
+      "Cats sleep for long stretches in warm sunlight.",
+      "Dogs enjoy playing fetch in the park."
+    ],
+    "question": "Which pet likes napping in bright sunny spots?",
+    "deterministic_risk": "Medium lexical mismatch because the question paraphrases the source text.",
+    "semantic_expected_advantage": "Semantic embeddings should connect napping/sleeping and sunny spots/sunlight more reliably."
+  },
+  {
+    "name": "conceptual phrasing over direct keywords",
+    "documents": [
+      "The museum opens at nine in the morning.",
+      "The cafe opens at noon."
+    ],
+    "question": "Which place starts welcoming visitors earliest?",
+    "deterministic_risk": "High because the question avoids the source keyword 'opens'.",
+    "semantic_expected_advantage": "Semantic retrieval should better connect 'starts welcoming visitors' with opening time."
+  }
+]
