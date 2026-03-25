@@ -15,10 +15,6 @@ from rag_knb_answering.answer_results import (
 from rag_knb_answering.answering import TextGenerator, build_answerer
 from rag_knb_core.config import RuntimeConfig
 from rag_knb_core.errors import ValidationError
-from rag_knb_indexing.chunking import chunk_documents
-from rag_knb_indexing.embedding_lifecycle import validate_embedding_workflow_compatibility
-from rag_knb_indexing.loaders import load_documents
-from rag_knb_indexing.storage import LocalKnowledgeBaseRepository
 from rag_knb_core.library_policies import (
     validate_max_count,
     validate_positive_request_limit,
@@ -34,6 +30,10 @@ from rag_knb_core.models import (
 )
 from rag_knb_core.observability import get_logger, log_event
 from rag_knb_core.pathing import is_path_within_allowed_root, resolve_data_dir
+from rag_knb_indexing.chunking import chunk_documents
+from rag_knb_indexing.embedding_lifecycle import validate_embedding_workflow_compatibility
+from rag_knb_indexing.loaders import load_documents
+from rag_knb_indexing.storage import LocalKnowledgeBaseRepository
 from rag_knb_retrieval.embeddings import EmbeddingBackend, build_embedder
 from rag_knb_retrieval.query_rewriting import build_query_plan
 from rag_knb_retrieval.retrieval import Retriever

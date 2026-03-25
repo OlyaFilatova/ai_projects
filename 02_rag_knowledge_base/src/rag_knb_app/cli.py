@@ -11,10 +11,10 @@ from rich.console import Console
 from rich.table import Table
 from typer.testing import CliRunner
 
-from rag_knb_core.errors import RagKnbError, ValidationError
-from rag_knb_core.pathing import coerce_paths, resolve_data_dir
 from rag_knb_app.service import KnowledgeBaseService
 from rag_knb_app.service_factory import build_service_from_options
+from rag_knb_core.errors import RagKnbError, ValidationError
+from rag_knb_core.pathing import coerce_paths, resolve_data_dir
 
 app = typer.Typer(
     add_completion=False,

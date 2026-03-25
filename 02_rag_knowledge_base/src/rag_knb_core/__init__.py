@@ -1,4 +1,5 @@
 """Core primitives shared across RAG KnB libraries."""
+# ruff: noqa: F403
 
 from rag_knb_core.config import *
 from rag_knb_core.errors import *
