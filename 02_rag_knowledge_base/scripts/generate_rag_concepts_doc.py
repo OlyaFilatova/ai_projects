@@ -5,7 +5,7 @@ from __future__ import annotations
 import sys
 from pathlib import Path
 
-from rag_knb.concepts_documentation import (
+from rag_knb_eval.concepts_documentation import (
     DEFAULT_CONCEPTS_DOC_PATH,
     write_concepts_document,
 )

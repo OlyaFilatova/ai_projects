@@ -9,9 +9,9 @@ from pathlib import Path
 
 import pytest
 
-from rag_knb.config import RuntimeConfig
-from rag_knb.errors import DependencyUnavailableError, ValidationError
-from rag_knb.retrieval_engine.embeddings import DeterministicEmbedder, build_embedder
+from rag_knb_core.config import RuntimeConfig
+from rag_knb_core.errors import DependencyUnavailableError, ValidationError
+from rag_knb_retrieval.embeddings import DeterministicEmbedder, build_embedder
 
 
 def test_deterministic_embedder_is_the_default_backend() -> None:
@@ -45,7 +45,7 @@ def test_deterministic_embedder_applies_small_safe_token_expansions() -> None:
 
 def test_huggingface_backend_requires_optional_dependency(monkeypatch: pytest.MonkeyPatch) -> None:
     """Selecting Hugging Face without the optional dependency should fail clearly."""
-    monkeypatch.setattr("rag_knb.optional_dependencies.find_spec", lambda _: None)
+    monkeypatch.setattr("rag_knb_core.optional_dependencies.find_spec", lambda _: None)
 
     with pytest.raises(DependencyUnavailableError) as error:
         build_embedder(RuntimeConfig.build(embedding_backend="huggingface"))
@@ -76,7 +76,7 @@ def test_huggingface_backend_suppresses_known_startup_noise(
             del text
             return [1.0, 0.0]
 
-    monkeypatch.setattr("rag_knb.retrieval_engine.embeddings.require_huggingface_langchain", lambda: None)
+    monkeypatch.setattr("rag_knb_retrieval.embeddings.require_huggingface_langchain", lambda: None)
     monkeypatch.setitem(
         sys.modules,
         "langchain_huggingface",

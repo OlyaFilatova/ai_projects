@@ -4,10 +4,10 @@ from __future__ import annotations
 
 import pytest
 
-from rag_knb.config import RuntimeConfig
-from rag_knb.errors import DependencyUnavailableError, ValidationError
-from rag_knb.retrieval_engine.embeddings import DeterministicEmbedder
-from rag_knb.retrieval_engine.vector_store import InMemoryVectorStore, build_vector_store
+from rag_knb_core.config import RuntimeConfig
+from rag_knb_core.errors import DependencyUnavailableError, ValidationError
+from rag_knb_retrieval.embeddings import DeterministicEmbedder
+from rag_knb_retrieval.vector_store import InMemoryVectorStore, build_vector_store
 
 
 def test_inmemory_vector_backend_is_the_default() -> None:
@@ -19,7 +19,7 @@ def test_inmemory_vector_backend_is_the_default() -> None:
 
 def test_faiss_backend_requires_optional_dependency(monkeypatch: pytest.MonkeyPatch) -> None:
     """Selecting FAISS without the optional dependency should fail clearly."""
-    monkeypatch.setattr("rag_knb.optional_dependencies.find_spec", lambda _: None)
+    monkeypatch.setattr("rag_knb_core.optional_dependencies.find_spec", lambda _: None)
 
     with pytest.raises(DependencyUnavailableError) as error:
         build_vector_store(RuntimeConfig.build(vector_backend="faiss"), DeterministicEmbedder())

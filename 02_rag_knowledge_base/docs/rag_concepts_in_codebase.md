@@ -8,9 +8,9 @@ Status values are `covered`, `partial`, and `missing` so the document stays hone
 The repo can load local text, markdown, and JSONL sources, then chunk them into retrieval-friendly units.
 
 Implementation paths:
-- `src/rag_knb/indexing/loaders.py::load_documents`
-- `src/rag_knb/indexing/chunking.py::chunk_document`
-- `src/rag_knb/indexing/chunking.py::chunk_documents`
+- `src/rag_knb_indexing/loaders.py::load_documents`
+- `src/rag_knb_indexing/chunking.py::chunk_document`
+- `src/rag_knb_indexing/chunking.py::chunk_documents`
 
 Tests:
 - `tests/test_loading_and_chunking.py`
@@ -20,10 +20,10 @@ Tests:
 The project compares deterministic embeddings, hybrid retrieval, vector stores, and final reranking for grounded local search.
 
 Implementation paths:
-- `src/rag_knb/retrieval_engine/embeddings.py::build_embedder`
-- `src/rag_knb/retrieval_engine/vector_store.py::build_vector_store`
-- `src/rag_knb/retrieval_engine/retrieval.py::Retriever.search_with_plan`
-- `src/rag_knb/retrieval_engine/evaluation.py::compare_retrieval_strategies`
+- `src/rag_knb_retrieval/embeddings.py::build_embedder`
+- `src/rag_knb_retrieval/vector_store.py::build_vector_store`
+- `src/rag_knb_retrieval/retrieval.py::Retriever.search_with_plan`
+- `src/rag_knb_eval/evaluation.py::compare_retrieval_strategies`
 
 Tests:
 - `tests/test_service_retrieval.py`
@@ -36,9 +36,9 @@ Tests:
 The service can rewrite queries and fold recent turns into the retrieval question, but it is still lightweight conversation state rather than full dialogue memory.
 
 Implementation paths:
-- `src/rag_knb/retrieval_engine/query_rewriting.py::build_query_plan`
-- `src/rag_knb/service.py::KnowledgeBaseService.ask`
-- `src/rag_knb/service.py::_build_conversation_aware_question`
+- `src/rag_knb_retrieval/query_rewriting.py::build_query_plan`
+- `src/rag_knb_app/service.py::KnowledgeBaseService.ask`
+- `src/rag_knb_app/service.py::_build_conversation_aware_question`
 
 Tests:
 - `tests/test_service_retrieval.py`
@@ -53,10 +53,10 @@ Notes and remaining gaps:
 Retrieved matches are compressed into evidence sentences and a lightweight answer plan before answer generation.
 
 Implementation paths:
-- `src/rag_knb/answers/context_building.py::build_evidence_set`
-- `src/rag_knb/answers/context_building.py::build_answer_plan`
-- `src/rag_knb/answers/answering.py::ExtractiveAnswerer.answer`
-- `src/rag_knb/answers/answering.py::GenerativeAnswerer.answer`
+- `src/rag_knb_answering/context_building.py::build_evidence_set`
+- `src/rag_knb_answering/context_building.py::build_answer_plan`
+- `src/rag_knb_answering/answering.py::ExtractiveAnswerer.answer`
+- `src/rag_knb_answering/answering.py::GenerativeAnswerer.answer`
 
 Tests:
 - `tests/test_answering.py`
@@ -70,10 +70,10 @@ Notes and remaining gaps:
 Answers expose citations, sentence-level support, prompt-injection filtering, and semantic-verification style checks before generative output is accepted.
 
 Implementation paths:
-- `src/rag_knb/answers/answer_results.py::with_claim_alignments`
-- `src/rag_knb/answers/answer_results.py::with_semantic_verification`
-- `src/rag_knb/answers/prompt_injection.py::apply_prompt_injection_policy`
-- `src/rag_knb/answers/answering.py::GenerativeAnswerer.answer`
+- `src/rag_knb_answering/answer_results.py::with_claim_alignments`
+- `src/rag_knb_answering/answer_results.py::with_semantic_verification`
+- `src/rag_knb_answering/prompt_injection.py::apply_prompt_injection_policy`
+- `src/rag_knb_answering/answering.py::GenerativeAnswerer.answer`
 
 Tests:
 - `tests/test_answering.py`
@@ -87,9 +87,9 @@ Notes and remaining gaps:
 Ambiguous questions can route to clarification prompts and conversation-aware answer-plan diagnostics.
 
 Implementation paths:
-- `src/rag_knb/answers/answer_results.py::build_clarification_needed_answer`
-- `src/rag_knb/service.py::_build_conversation_answer_plan`
-- `src/rag_knb/answers/answering.py::_route_reason`
+- `src/rag_knb_answering/answer_results.py::build_clarification_needed_answer`
+- `src/rag_knb_app/service.py::_build_conversation_answer_plan`
+- `src/rag_knb_answering/answering.py::_route_reason`
 
 Tests:
 - `tests/test_service_retrieval.py`
@@ -104,8 +104,8 @@ Notes and remaining gaps:
 The answerer can aggregate support across multiple documents for explicit multi-part or composition-style questions.
 
 Implementation paths:
-- `src/rag_knb/answers/answering.py::_select_multi_hop_supporting_sentences`
-- `src/rag_knb/answers/context_building.py::build_answer_plan`
+- `src/rag_knb_answering/answering.py::_select_multi_hop_supporting_sentences`
+- `src/rag_knb_answering/context_building.py::build_answer_plan`
 
 Tests:
 - `tests/test_answering.py`
@@ -120,10 +120,10 @@ Notes and remaining gaps:
 The repo includes local fixture-driven evaluation, grouped summaries, and side-by-side retrieval-strategy comparison helpers.
 
 Implementation paths:
-- `src/rag_knb/retrieval_engine/evaluation.py::evaluate_answer`
-- `src/rag_knb/retrieval_engine/evaluation.py::summarize_results`
-- `src/rag_knb/retrieval_engine/evaluation.py::summarize_results_by_group`
-- `src/rag_knb/retrieval_engine/evaluation.py::compare_retrieval_strategies`
+- `src/rag_knb_eval/evaluation.py::evaluate_answer`
+- `src/rag_knb_eval/evaluation.py::summarize_results`
+- `src/rag_knb_eval/evaluation.py::summarize_results_by_group`
+- `src/rag_knb_eval/evaluation.py::compare_retrieval_strategies`
 
 Tests:
 - `tests/test_evaluation_harness.py`

@@ -9,17 +9,17 @@ from typing import Any, cast
 
 import pytest
 
-from rag_knb.errors import DependencyUnavailableError
-from rag_knb.models import AnswerResult, Chunk, RetrievalResult
-from rag_knb.retrieval_engine import evaluation as evaluation_module
-from rag_knb.retrieval_engine.evaluation import (
+from rag_knb_core.errors import DependencyUnavailableError
+from rag_knb_core.models import AnswerResult, Chunk, RetrievalResult
+from rag_knb_eval import evaluation as evaluation_module
+from rag_knb_eval.evaluation import (
     EvaluationCase,
     compare_retrieval_strategies,
     evaluate_answer,
     summarize_results,
     summarize_results_by_group,
 )
-from rag_knb.service import KnowledgeBaseService
+from rag_knb_app.service import KnowledgeBaseService
 
 
 def test_evaluation_harness_scores_local_quality_signals(tmp_path: Path) -> None:

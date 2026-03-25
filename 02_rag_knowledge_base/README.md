@@ -8,7 +8,7 @@ It is intentionally educational and inspectable rather than production-optimized
 
 - Installable Python package via `pyproject.toml`
 - CLI entry point exposed as `rag-knb`
-- Reusable library entry point via `rag_knb.KnowledgeBaseService`
+- Reusable library entry point via `rag_knb_app.KnowledgeBaseService`
 - TXT, Markdown, and simple JSON/JSONL record loading
 - Deterministic sentence-aware chunking with paragraph and fixed-width fallbacks
 - Deterministic local retrieval by default, plus opt-in hybrid retrieval
@@ -31,13 +31,16 @@ It is intentionally educational and inspectable rather than production-optimized
 
 ## Source layout
 
-Implementation modules are bundled under logical packages:
+Implementation is now split into six library packages:
 
-- `rag_knb.answers`: answer construction, context shaping, prompt injection, and built-in LLM integration
-- `rag_knb.indexing`: document loading, chunking, persistence, and embedding lifecycle compatibility
-- `rag_knb.retrieval_engine`: embeddings, query rewriting, retrieval, vector stores, and evaluation helpers
+- `rag_knb_core`: shared models, config, errors, pathing, policies, and optional dependency helpers
+- `rag_knb_indexing`: document loading, chunking, persistence, and embedding lifecycle compatibility
+- `rag_knb_retrieval`: embeddings, query rewriting, retrieval, and vector stores
+- `rag_knb_answering`: answer construction, context shaping, prompt injection, and built-in LLM integration
+- `rag_knb_app`: service orchestration, runtime option parsing, and CLI wiring
+- `rag_knb_eval`: evaluation helpers and generated concept-to-code documentation support
 
-The public top-level package API remains available through `rag_knb.__init__`, but the internal source of truth lives in those package directories instead of a flat module layout.
+The split packages are now the only supported import paths.
 
 ## What does not work yet
 
@@ -212,7 +215,8 @@ Example:
 ```python
 from pathlib import Path
 
-from rag_knb import KnowledgeBaseService, RuntimeConfig
+from rag_knb_app.service import KnowledgeBaseService
+from rag_knb_core.config import RuntimeConfig
 
 service = KnowledgeBaseService(
     config=RuntimeConfig.build(
@@ -234,6 +238,9 @@ service.save()
 Incremental refresh for persisted knowledge bases:
 
 ```python
+from rag_knb_app.service import KnowledgeBaseService
+from rag_knb_core.config import RuntimeConfig
+
 service = KnowledgeBaseService(config=RuntimeConfig.build(data_dir=".rag-knb"))
 service.load()
 refresh_result = service.refresh_paths([Path("cats.txt"), Path("dogs.txt")], remove_missing=True)
@@ -269,7 +276,8 @@ Enable them in library code through `RuntimeConfig`:
 ```python
 from pathlib import Path
 
-from rag_knb import KnowledgeBaseService, RuntimeConfig
+from rag_knb_app.service import KnowledgeBaseService
+from rag_knb_core.config import RuntimeConfig
 
 service = KnowledgeBaseService(
     config=RuntimeConfig.build(
@@ -308,7 +316,7 @@ This repo includes a small local evaluation harness for regression-friendly qual
 - recall@k
 - mean reciprocal rank (MRR)
 
-The library also includes a reusable retrieval-strategy comparison helper in `rag_knb.retrieval_engine.evaluation.compare_retrieval_strategies(...)`. It records both raw candidate ranking and final reranked document order so you can compare vector, hybrid, and optional semantic workflows on the same fixture cases without turning the repo into a benchmark runner.
+The library also includes a reusable retrieval-strategy comparison helper in `rag_knb_eval.evaluation.compare_retrieval_strategies(...)`. It records both raw candidate ranking and final reranked document order so you can compare vector, hybrid, and optional semantic workflows on the same fixture cases without turning the repo into a benchmark runner.
 
 Run it locally with:
 
@@ -349,7 +357,7 @@ If the default changes later, the main migration impacts will be:
 
 This project no longer ships a built-in FastAPI interface. The intended model is:
 
-- keep `rag_knb` as the library layer
+- keep the split library packages as the library layer
 - build your own API around `KnowledgeBaseService`
 - map your API request models to `RuntimeConfig.build(...)` and service calls
 
@@ -361,7 +369,8 @@ from pathlib import Path
 from fastapi import FastAPI
 from pydantic import BaseModel, Field
 
-from rag_knb import KnowledgeBaseService, RuntimeConfig
+from rag_knb_app.service import KnowledgeBaseService
+from rag_knb_core.config import RuntimeConfig
 
 
 class AskRequest(BaseModel):
@@ -396,7 +405,7 @@ Practical integration guidance:
 
 ## App/API responsibilities
 
-`rag_knb` is the library layer. An embedding application or API is still responsible for the surrounding operational and security controls.
+The split libraries are the library layer. An embedding application or API is still responsible for the surrounding operational and security controls.
 
 Library responsibilities:
 
@@ -433,7 +442,7 @@ The library enforces these controls when configured through `RuntimeConfig`:
 Example:
 
 ```python
-from rag_knb import RuntimeConfig
+from rag_knb_core.config import RuntimeConfig
 
 config = RuntimeConfig.build(
     allowed_root="./sandbox",
@@ -512,20 +521,20 @@ The deterministic offline embedder intentionally uses light normalization plus a
 
 Required-technology mapping:
 
-- LangChain: recursive text splitter and optional backend adapters in `src/rag_knb/indexing/chunking.py`, `src/rag_knb/retrieval_engine/embeddings.py`, and `src/rag_knb/retrieval_engine/vector_store.py`
-- vector database: FAISS backend in `src/rag_knb/retrieval_engine/vector_store.py`
-- Hugging Face embeddings: LangChain Hugging Face embeddings in `src/rag_knb/retrieval_engine/embeddings.py`
+- LangChain: recursive text splitter and optional backend adapters in `src/rag_knb_indexing/chunking.py`, `src/rag_knb_retrieval/embeddings.py`, and `src/rag_knb_retrieval/vector_store.py`
+- vector database: FAISS backend in `src/rag_knb_retrieval/vector_store.py`
+- Hugging Face embeddings: LangChain Hugging Face embeddings in `src/rag_knb_retrieval/embeddings.py`
 
 Internal structure:
 
-- `src/rag_knb/runtime_options.py`: shared runtime override normalization for interface layers
-- `src/rag_knb/pathing.py`: shared path coercion and persistence-target resolution
-- `src/rag_knb/service_factory.py`: shared service construction helpers for interface layers
-- `src/rag_knb/optional_dependencies.py`: centralized optional dependency guards
-- `src/rag_knb/cli.py`: Typer command surface and Rich-backed CLI rendering
-- `src/rag_knb/answers/`: grounded answer construction, context shaping, prompt-injection filtering, and built-in LLM support
-- `src/rag_knb/indexing/`: document loading, chunking, persistence, and embedding workflow compatibility
-- `src/rag_knb/retrieval_engine/`: embeddings, query rewriting, retrieval, vector stores, and local evaluation helpers
+- `src/rag_knb_app/runtime_options.py`: shared runtime override normalization for interface layers
+- `src/rag_knb_core/pathing.py`: shared path coercion and persistence-target resolution
+- `src/rag_knb_app/service_factory.py`: shared service construction helpers for interface layers
+- `src/rag_knb_core/optional_dependencies.py`: centralized optional dependency guards
+- `src/rag_knb_app/cli.py`: Typer command surface and Rich-backed CLI rendering
+- `src/rag_knb_answering/`: grounded answer construction, context shaping, prompt-injection filtering, and built-in LLM support
+- `src/rag_knb_indexing/`: document loading, chunking, persistence, and embedding workflow compatibility
+- `src/rag_knb_retrieval/`: embeddings, query rewriting, retrieval, vector stores, and local evaluation helpers
 
 What remains intentionally custom:
 

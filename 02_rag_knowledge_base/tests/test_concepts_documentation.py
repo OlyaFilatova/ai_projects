@@ -4,7 +4,7 @@ from __future__ import annotations
 
 from pathlib import Path
 
-from rag_knb.concepts_documentation import (
+from rag_knb_eval.concepts_documentation import (
     build_concept_mappings,
     render_concepts_document,
     write_concepts_document,
@@ -17,7 +17,7 @@ def test_render_concepts_document_maps_key_rag_areas() -> None:
 
     assert "# RAG concepts in this codebase" in rendered
     assert "## Retrieval backends, hybrid ranking, and reranking (covered)" in rendered
-    assert "`src/rag_knb/retrieval_engine/retrieval.py::Retriever.search_with_plan`" in rendered
+    assert "`src/rag_knb_retrieval/retrieval.py::Retriever.search_with_plan`" in rendered
     assert "`tests/test_evaluation_harness.py`" in rendered
     assert "## Still-missing concepts (missing)" in rendered
 

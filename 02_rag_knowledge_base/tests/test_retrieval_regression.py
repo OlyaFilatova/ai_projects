@@ -5,7 +5,7 @@ from __future__ import annotations
 from pathlib import Path
 from time import perf_counter
 
-from rag_knb.service import KnowledgeBaseService
+from rag_knb_app.service import KnowledgeBaseService
 from tests.snapshot import assert_json_snapshot
 
 

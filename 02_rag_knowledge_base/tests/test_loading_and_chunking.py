@@ -7,9 +7,9 @@ from pathlib import Path
 
 import pytest
 
-from rag_knb.errors import DocumentLoadError, UnsupportedFileTypeError
-from rag_knb.indexing.chunking import chunk_document
-from rag_knb.indexing.loaders import load_document, load_documents
+from rag_knb_core.errors import DocumentLoadError, UnsupportedFileTypeError
+from rag_knb_indexing.chunking import chunk_document
+from rag_knb_indexing.loaders import load_document, load_documents
 
 
 def test_load_txt_document(tmp_path: Path) -> None:

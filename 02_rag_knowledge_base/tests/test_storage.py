@@ -7,9 +7,9 @@ from pathlib import Path
 
 import pytest
 
-from rag_knb.errors import PersistedStateError
-from rag_knb.indexing.storage import LocalKnowledgeBaseRepository
-from rag_knb.service import KnowledgeBaseService
+from rag_knb_app.service import KnowledgeBaseService
+from rag_knb_core.errors import PersistedStateError
+from rag_knb_indexing.storage import LocalKnowledgeBaseRepository
 from tests.snapshot import assert_json_snapshot
 
 

@@ -7,11 +7,11 @@ from pathlib import Path
 
 import pytest
 
-from rag_knb.answers.answer_results import build_clarification_needed_answer
-from rag_knb.config import RuntimeConfig
-from rag_knb.errors import DocumentLoadError, ValidationError
-from rag_knb.models import Chunk, ConversationTurn, RetrievalResult
-from rag_knb.service import KnowledgeBaseService
+from rag_knb_answering.answer_results import build_clarification_needed_answer
+from rag_knb_app.service import KnowledgeBaseService
+from rag_knb_core.config import RuntimeConfig
+from rag_knb_core.errors import DocumentLoadError, ValidationError
+from rag_knb_core.models import Chunk, ConversationTurn, RetrievalResult
 
 
 def test_service_can_ingest_and_answer_from_indexed_content(tmp_path: Path) -> None:

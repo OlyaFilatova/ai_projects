@@ -6,10 +6,10 @@ from dataclasses import dataclass
 
 import pytest
 
-from rag_knb.answers.answering import GenerativeAnswerer, build_answerer
-from rag_knb.config import RuntimeConfig
-from rag_knb.errors import DependencyUnavailableError
-from rag_knb.models import Chunk, RetrievalResult
+from rag_knb_answering.answering import GenerativeAnswerer, build_answerer
+from rag_knb_core.config import RuntimeConfig
+from rag_knb_core.errors import DependencyUnavailableError
+from rag_knb_core.models import Chunk, RetrievalResult
 
 
 @dataclass(frozen=True, slots=True)

@@ -5,7 +5,7 @@ build-backend = "setuptools.build_meta"
 [project]
 name = "rag-knb"
 version = "0.1.0"
-description = "Local RAG knowledge base library with a CLI workflow."
+description = "Local RAG knowledge base split into core, indexing, retrieval, answering, app, and eval libraries."
 readme = "README.md"
 requires-python = ">=3.11"
 dependencies = [
@@ -33,7 +33,7 @@ dev = [
 ]
 
 [project.scripts]
-rag-knb = "rag_knb.cli:main"
+rag-knb = "rag_knb_app.cli:main"
 
 [tool.pytest.ini_options]
 pythonpath = ["src"]

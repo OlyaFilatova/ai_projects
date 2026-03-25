@@ -1,6 +1,8 @@
 """Package smoke tests."""
 
-from rag_knb import DeterministicEmbedder, KnowledgeBaseService, RuntimeConfig
+from rag_knb_app.service import KnowledgeBaseService
+from rag_knb_core.config import RuntimeConfig
+from rag_knb_retrieval.embeddings import DeterministicEmbedder
 
 
 def test_package_exports_basic_types() -> None:

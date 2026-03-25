@@ -9,14 +9,14 @@ from pathlib import Path
 
 import pytest
 
-from rag_knb.cli import run_cli
-from rag_knb.service import KnowledgeBaseService
+from rag_knb_app.cli import run_cli
+from rag_knb_app.service import KnowledgeBaseService
 
 
 def test_module_help_returns_success() -> None:
     """The CLI should print help successfully."""
     result = subprocess.run(
-        [sys.executable, "-m", "rag_knb", "--help"],
+        [sys.executable, "-m", "rag_knb_app", "--help"],
         capture_output=True,
         text=True,
         check=False,
@@ -29,7 +29,7 @@ def test_module_help_returns_success() -> None:
 def test_status_command_returns_bootstrap_message() -> None:
     """The bootstrap CLI should expose a simple status command."""
     result = subprocess.run(
-        [sys.executable, "-m", "rag_knb", "status"],
+        [sys.executable, "-m", "rag_knb_app", "status"],
         capture_output=True,
         text=True,
         check=False,

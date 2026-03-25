@@ -4,9 +4,9 @@ from __future__ import annotations
 
 from pathlib import Path
 
-from rag_knb.config import DEFAULT_DATA_DIR
-from rag_knb.service import KnowledgeBaseService
-from rag_knb.service_factory import build_service_from_options
+from rag_knb_app.service import KnowledgeBaseService
+from rag_knb_app.service_factory import build_service_from_options
+from rag_knb_core.config import DEFAULT_DATA_DIR
 
 
 class _RuntimeOptionSource:

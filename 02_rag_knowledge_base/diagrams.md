@@ -1,16 +1,16 @@
 # RAG KnB Diagrams
 
-This file explains the current package layout and the main runtime flows in `rag_knb`.
+This file explains the current package layout and the main runtime flows across the split RAG KnB libraries.
 
 ## 1. High-Level Structure
 
 ```mermaid
 flowchart LR
     User[User / Calling App]
-    CLI[CLI<br/>rag_knb.cli<br/>Typer + Rich]
+    CLI[CLI<br/>rag_knb_app.cli<br/>Typer + Rich]
     API[Consumer API / App]
-    Factory[Service Factory<br/>rag_knb.service_factory]
-    Service[KnowledgeBaseService<br/>rag_knb.service]
+    Factory[Service Factory<br/>rag_knb_app.service_factory]
+    Service[KnowledgeBaseService<br/>rag_knb_app.service]
 
     Answers[answers package<br/>answering, llm,<br/>context_building, prompt_injection]
     Indexing[indexing package<br/>loaders, chunking,<br/>storage, embedding_lifecycle]
@@ -36,13 +36,12 @@ flowchart LR
 ```mermaid
 flowchart LR
     subgraph Public["Public Entry Points"]
-        Init[rag_knb.__init__]
-        CLIEntry[rag_knb.cli<br/>Typer + Rich]
-        Factory[rag_knb.service_factory]
-        Service[rag_knb.service]
+        CLIEntry[rag_knb_app.cli<br/>Typer + Rich]
+        Factory[rag_knb_app.service_factory]
+        Service[rag_knb_app.service]
     end
 
-    subgraph Answers["rag_knb.answers"]
+    subgraph Answers["rag_knb_answering"]
         Answering[answering]
         Results[answer_results]
         Context[context_building]
@@ -50,14 +49,14 @@ flowchart LR
         Injection[prompt_injection]
     end
 
-    subgraph Indexing["rag_knb.indexing"]
+    subgraph Indexing["rag_knb_indexing"]
         Loaders[loaders]
         Chunking[chunking]
         Storage[storage]
         Lifecycle[embedding_lifecycle]
     end
 
-    subgraph Retrieval["rag_knb.retrieval_engine"]
+    subgraph Retrieval["rag_knb_retrieval / rag_knb_eval"]
         Embeddings[embeddings]
         Rewrite[query_rewriting]
         Retrieve[retrieval]
@@ -80,8 +79,6 @@ flowchart LR
     CLIEntry --> Factory
     Factory --> Options
     Options --> Config
-    Init --> Service
-
     Service --> Loaders
     Service --> Chunking
     Service --> Storage
@@ -115,7 +112,7 @@ flowchart LR
 sequenceDiagram
     participant U as User
     participant C as CLI
-    participant F as rag_knb.service_factory
+    participant F as rag_knb_app.service_factory
     participant S as KnowledgeBaseService
 
     U->>C: rag-knb status / ingest / ask / list-documents / remove-document
@@ -302,7 +299,7 @@ flowchart TD
 flowchart LR
     Script[scripts/generate_rag_concepts_doc.py] --> Module[concepts_documentation.write_concepts_document]
     Module --> Catalog[build_concept_mappings]
-    Catalog --> CodeMap[Implementation paths in src/rag_knb]
+    Catalog --> CodeMap[Implementation paths in split src packages]
     Catalog --> TestMap[Related tests]
     Module --> Output[docs/rag_concepts_in_codebase.md]
 ```

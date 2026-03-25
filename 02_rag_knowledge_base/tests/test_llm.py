@@ -9,10 +9,10 @@ from urllib.request import Request
 
 import pytest
 
-from rag_knb.answers.llm import OpenAIChatTextGenerator, build_builtin_text_generator
-from rag_knb.config import RuntimeConfig
-from rag_knb.errors import DependencyUnavailableError
-from rag_knb.models import Chunk, RetrievalResult
+from rag_knb_answering.llm import OpenAIChatTextGenerator, build_builtin_text_generator
+from rag_knb_core.config import RuntimeConfig
+from rag_knb_core.errors import DependencyUnavailableError
+from rag_knb_core.models import Chunk, RetrievalResult
 
 
 @dataclass
@@ -52,7 +52,7 @@ def test_builtin_text_generator_uses_openai_compatible_request(
             ).encode("utf-8")
         )
 
-    monkeypatch.setattr("rag_knb.answers.llm.request.urlopen", fake_urlopen)
+    monkeypatch.setattr("rag_knb_answering.llm.request.urlopen", fake_urlopen)
     generator = OpenAIChatTextGenerator(
         api_key="test-key",
         model="gpt-test",

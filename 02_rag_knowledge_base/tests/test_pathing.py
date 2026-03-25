@@ -4,7 +4,7 @@ from __future__ import annotations
 
 from pathlib import Path
 
-from rag_knb.pathing import coerce_paths, is_path_within_allowed_root, resolve_data_dir
+from rag_knb_core.pathing import coerce_paths, is_path_within_allowed_root, resolve_data_dir
 
 
 def test_coerce_paths_preserves_order() -> None:

@@ -1,20 +1,20 @@
 # Call Diagrams
 
-This file focuses on current call relationships between the main functions and classes in `rag_knb`.
+This file focuses on current call relationships between the main functions and classes in the split RAG KnB libraries.
 
 ## CLI Dispatch And Service Creation
 
 ```mermaid
 flowchart TD
-    A[User runs rag-knb command] --> B[cli.main / __main__]
-    B --> C[cli.run_cli]
+    A[User runs rag-knb command] --> B[rag_knb_app.cli.main / __main__]
+    B --> C[rag_knb_app.cli.run_cli]
     C --> D[Typer app / CliRunner]
     D --> E[Typer option parsing]
     E --> F{Command selected}
-    F -->|status| G[cli.handle_status]
-    F -->|ingest ask list remove| H[cli._build_service_from_args]
-    H --> I[service_factory.build_service_from_options]
-    I --> J[RuntimeOptionValues.from_object]
+    F -->|status| G[rag_knb_app.cli.handle_status]
+    F -->|ingest ask list remove| H[rag_knb_app.cli._build_service_from_args]
+    H --> I[rag_knb_app.service_factory.build_service_from_options]
+    I --> J[rag_knb_app.runtime_options.RuntimeOptionValues.from_object]
     J --> K{Overrides present}
     K -->|no| L[Reuse existing service or create KnowledgeBaseService]
     K -->|yes| M[RuntimeOptionValues.to_runtime_config]
@@ -28,11 +28,11 @@ flowchart TD
 
 ```mermaid
 flowchart LR
-    A[KnowledgeBaseService.__init__] --> B[retrieval_engine.build_embedder]
-    A --> C[retrieval_engine.build_vector_store]
+    A[KnowledgeBaseService.__init__] --> B[rag_knb_retrieval.build_embedder]
+    A --> C[rag_knb_retrieval.build_vector_store]
     A --> D[Retriever.__init__]
-    A --> E[answers.build_answerer]
-    A --> F[observability.get_logger]
+    A --> E[rag_knb_answering.build_answerer]
+    A --> F[rag_knb_core.observability.get_logger]
     B --> G{Embedding backend}
     G -->|deterministic| H[DeterministicEmbedder]
     G -->|huggingface| I[HuggingFaceEmbedder]
@@ -49,15 +49,15 @@ flowchart LR
 
 ```mermaid
 flowchart TD
-    A[cli.handle_ingest or caller] --> B[KnowledgeBaseService.ingest_paths]
-    B --> C[library_policies.validate_max_count for documents]
-    B --> D[indexing.loaders.load_documents]
+    A[rag_knb_app.cli.handle_ingest or caller] --> B[KnowledgeBaseService.ingest_paths]
+    B --> C[rag_knb_core.library_policies.validate_max_count for documents]
+    B --> D[rag_knb_indexing.loaders.load_documents]
     D --> E[load_document per path]
-    E --> F[pathing / allowed-root check]
+    E --> F[rag_knb_core.pathing / allowed-root check]
     E --> G[file-size validation]
     E --> H[read text or parse JSON / JSONL via jsonlines]
     E --> I[build Document records]
-    B --> J[indexing.chunking.chunk_documents]
+    B --> J[rag_knb_indexing.chunking.chunk_documents]
     J --> K[chunk_document]
     K --> L{Structured record?}
     L -->|yes| M[_chunk_structured_record]
@@ -66,14 +66,14 @@ flowchart TD
     N -->|no| P[_chunk_by_sentences]
     P --> Q{Sentence chunks available?}
     Q -->|no| R[_chunk_by_paragraphs or _chunk_by_fixed_width]
-    B --> S[library_policies.validate_max_count for chunks]
+    B --> S[rag_knb_core.library_policies.validate_max_count for chunks]
     B --> T[_replace_state]
     T --> U[Retriever.index_chunks]
     U --> V[VectorStore.clear]
     U --> W[EmbeddingBackend.embed per chunk]
     W --> X[VectorStore.add]
     B --> Y[_log_duration]
-    Y --> Z[observability.log_event ingest_completed]
+    Y --> Z[rag_knb_core.observability.log_event ingest_completed]
 ```
 
 ## Refresh Call Flow
@@ -226,7 +226,7 @@ flowchart TD
     A[User runs scripts/generate_rag_concepts_doc.py] --> B[concepts_documentation.write_concepts_document]
     B --> C[render_concepts_document]
     C --> D[build_concept_mappings]
-    D --> E[Map concepts to src/rag_knb modules and tests]
+    D --> E[Map concepts to split src packages and tests]
     C --> F[Markdown document text]
     F --> G[docs/rag_concepts_in_codebase.md]
 ```

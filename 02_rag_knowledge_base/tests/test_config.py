@@ -5,8 +5,8 @@ from typing import Any, cast
 
 import pytest
 
-from rag_knb.config import RuntimeConfig
-from rag_knb.errors import ValidationError
+from rag_knb_core.config import RuntimeConfig
+from rag_knb_core.errors import ValidationError
 
 
 def test_runtime_config_defaults_are_stable() -> None:
