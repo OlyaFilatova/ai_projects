@@ -1,10 +1,13 @@
-from transformers import AutoTokenizer, AutoModelForSeq2SeqLM
+import asyncio
 
-MODEL = "facebook/nllb-200-distilled-600M"
+from config import MODEL_EN_TO_UK, MODEL_UK_TO_EN
+from loader import async_loader
 
-print(f"Loading {MODEL}...")
+models = { MODEL_EN_TO_UK, MODEL_UK_TO_EN }
 
-AutoTokenizer.from_pretrained(MODEL)
-AutoModelForSeq2SeqLM.from_pretrained(MODEL)
+async def preload():
+  await asyncio.gather(*[async_loader(model) for model in models])
 
-print("Model ready.")
+asyncio.run(
+  preload()
+)

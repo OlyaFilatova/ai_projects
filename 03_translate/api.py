@@ -1,11 +1,12 @@
 from contextlib import asynccontextmanager
+from enum import Enum
 
 import torch
 from fastapi import FastAPI
 from pydantic import BaseModel
 from transformers import AutoModelForSeq2SeqLM, AutoTokenizer
 
-from config import MODEL
+from config import MODEL_EN_TO_UK, MODEL_UK_TO_EN
 
 DEVICE = (
   "mps"
@@ -18,22 +19,28 @@ DEVICE = (
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-  tokenizer = AutoTokenizer.from_pretrained(MODEL)
-  model = AutoModelForSeq2SeqLM.from_pretrained(MODEL).to(DEVICE)
+  app.state[TranslationDirectionEnum.EN_TO_UK] = (
+    AutoTokenizer.from_pretrained("Helsinki-NLP/opus-mt-en-uk"),
+    AutoModelForSeq2SeqLM.from_pretrained("Helsinki-NLP/opus-mt-en-uk").to(DEVICE),
+  )
 
-  app.state.tokenizer = tokenizer
-  app.state.model = model
+  app.state[TranslationDirectionEnum.UK_TO_EN] = (
+    AutoTokenizer.from_pretrained("Helsinki-NLP/opus-mt-uk-en"),
+    AutoModelForSeq2SeqLM.from_pretrained("Helsinki-NLP/opus-mt-uk-en").to(DEVICE),
+  )
 
   yield
 
 
 app = FastAPI(lifespan=lifespan)
 
+class TranslationDirectionEnum(str, Enum):
+    EN_TO_UK = "en_to_uk"
+    UK_TO_EN = "uk_to_en"
 
 class TranslationRequest(BaseModel):
   texts: list[str]
-  src_lang: str = "eng_Latn"
-  tgt_lang: str = "ukr_Cyrl"
+  direction: TranslationDirectionEnum = TranslationDirectionEnum.EN_TO_UK
 
 
 class TranslationResponse(BaseModel):
@@ -44,17 +51,15 @@ def health():
   return {
     "status": "ok",
     "device": DEVICE,
-    "model": MODEL,
+    "model_uk_to_en": MODEL_UK_TO_EN,
+    "model_en_to_uk": MODEL_EN_TO_UK,
   }
 
 
 @app.post("/translate", response_model=TranslationResponse)
 def translate(req: TranslationRequest):
 
-  tokenizer = app.state.tokenizer
-  model = app.state.model
-
-  tokenizer.src_lang = req.src_lang
+  tokenizer, model = app.state[req.direction]
 
   inputs = tokenizer(
     req.texts,
@@ -66,10 +71,7 @@ def translate(req: TranslationRequest):
   with torch.inference_mode():
     generated = model.generate(
       **inputs,
-      forced_bos_token_id=tokenizer.convert_tokens_to_ids(
-        req.tgt_lang
-      ),
-      max_length=512,
+      max_new_tokens=512,
     )
 
   translations = tokenizer.batch_decode(

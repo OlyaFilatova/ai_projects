@@ -36,8 +36,7 @@ curl -X POST http://localhost:8000/translate \
       "How are you?",
       "Artificial intelligence is changing translation."
     ],
-    "src_lang": "eng_Latn",
-    "tgt_lang": "ukr_Cyrl"
+    "direction": "en_to_uk"
   }'
 ```
 
@@ -52,8 +51,7 @@ curl -X POST http://localhost:8000/translate \
       "Як справи?",
       "Штучний інтелект швидко розвивається."
     ],
-    "src_lang": "ukr_Cyrl",
-    "tgt_lang": "eng_Latn"
+    "direction": "uk_to_en"
   }'
 ```
 

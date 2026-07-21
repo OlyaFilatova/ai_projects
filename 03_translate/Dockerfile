@@ -21,6 +21,7 @@ RUN pip install --upgrade pip && \
 
 COPY docker-entrypoint.sh .
 COPY config.py .
+COPY loader.py .
 COPY api.py .
 COPY preload_model.py .
 
