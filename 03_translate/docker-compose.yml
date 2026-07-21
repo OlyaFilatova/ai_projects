@@ -1,0 +1,21 @@
+version: "3.9"
+
+services:
+  translator:
+    build: .
+    container_name: nllb-translator
+
+    ports:
+      - "8000:8000"
+
+    volumes:
+      - huggingface_cache:/models
+
+    environment:
+      HF_HOME: /models
+      TRANSFORMERS_CACHE: /models
+
+    restart: unless-stopped
+
+volumes:
+  huggingface_cache:
