@@ -122,3 +122,13 @@ To exit
 ```
 
 `pi`
+
+# Explore further
+
+[Pi](https://pi.dev/docs/latest)
+
+[microsandbox](https://docs.microsandbox.dev/getting-started/introduction)
+
+[Ollama](https://docs.ollama.com/api/introduction)
+
+[Qwen3-coder](https://qwen.ai/blog?id=qwen3-coder)
